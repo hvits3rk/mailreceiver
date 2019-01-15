@@ -3,6 +3,7 @@ package com.github.hvits3rk.mailreceiver.controller;
 import com.github.hvits3rk.mailreceiver.entity.PriceItem;
 import com.github.hvits3rk.mailreceiver.repository.PriceItemRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
@@ -28,5 +29,10 @@ public class MainController {
         priceItem.setVendor("vendor17");
         priceItemRepository.save(priceItem);
         return "index";
+    }
+
+    @GetMapping("/mail")
+    public String mailPage(Model model) {
+        return "mail";
     }
 }
