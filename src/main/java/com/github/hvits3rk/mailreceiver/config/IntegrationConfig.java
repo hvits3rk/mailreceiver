@@ -25,9 +25,10 @@ public class IntegrationConfig {
         javaMailProperties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         javaMailProperties.setProperty("mail.imap.socketFactory.fallback", "false");
         javaMailProperties.setProperty("mail.store.protocol", "imaps");
-        javaMailProperties.setProperty("mail.debug", "false");
+        javaMailProperties.setProperty("mail.imaps.partialfetch", "false");
         javaMailProperties.setProperty("mail.imaps.timeout", "300000");
         javaMailProperties.setProperty("mail.mime.charset", "utf-8");
+        javaMailProperties.setProperty("mail.debug", "false");
 
         return javaMailProperties;
     }
@@ -39,7 +40,6 @@ public class IntegrationConfig {
         mailReceiver.setJavaMailProperties(javaMailProperties());
         mailReceiver.setShouldDeleteMessages(false);
         mailReceiver.setShouldMarkMessagesAsRead(true);
-//        mailReceiver.setEmbeddedPartsAsBytes(false);
         mailReceiver.afterPropertiesSet();
 
         ImapIdleChannelAdapter imapIdleChannelAdapter = new
