@@ -26,6 +26,6 @@ public class MainController {
 
     @RequestMapping("/debug/launchSpark")
     public void launchSpark() {
-        sparkService.runCsvDataFrame(csvPath);
+        sparkService.runCsvDataFrame(csvPath, "Hv1ts3rk <romkacg@gmail.com>");
     }
 }

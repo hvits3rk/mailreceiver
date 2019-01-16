@@ -1,6 +1,7 @@
 package com.github.hvits3rk.mailreceiver.service;
 
 import com.github.hvits3rk.mailreceiver.component.SparkComponent;
+import com.github.hvits3rk.mailreceiver.model.CompanyInfo;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -15,12 +16,19 @@ import static org.apache.spark.sql.functions.*;
 public class SparkService {
 
     private final SparkComponent sparkComponent;
+    private final CompanyInfoService companyInfoService;
 
-    public SparkService(SparkComponent sparkComponent) {
+    public SparkService(SparkComponent sparkComponent, CompanyInfoService companyInfoService) {
         this.sparkComponent = sparkComponent;
+        this.companyInfoService = companyInfoService;
     }
 
-    public void runCsvDataFrame(String pathToCsv) {
+    public void runCsvDataFrame(String pathToCsv, String companyName) {
+
+        CompanyInfo companyInfo = companyInfoService.findByName(companyName);
+
+        if (companyInfo == null)
+            return;
 
         SparkSession spark = sparkComponent.getSparkSession();
 
@@ -35,15 +43,14 @@ public class SparkService {
         initDataset.createOrReplaceTempView("init_dataset");
 
         Dataset<Row> dataset = initDataset
-                .select(col("Бренд").as("Vendor"),
-                        col("Каталожный номер").as("Number"),
-                        rpad(col("Описание"), 512, "").as("Description"),
-                        regexp_replace(col("`Цена, руб.`"), ",", ".").as("Price"),
-                        regexp_extract(col("Наличие"), "(\\d+)(?!.*\\d)", 1).as("Count"),
-                        regexp_replace(upper(col("Бренд")), "[^A-Z0-9_]", "").as("SearchVendor"),
-                        regexp_replace(upper(col("Каталожный номер")), "[^A-Z0-9_]", "").as("SearchNumber")
+                .select(col(companyInfo.getVendor()).as("Vendor"),
+                        col(companyInfo.getNumber()).as("Number"),
+                        rpad(col(companyInfo.getDescription()), 512, "").as("Description"),
+                        regexp_replace(col(companyInfo.getPrice()), ",", ".").as("Price"),
+                        regexp_extract(col(companyInfo.getCount()), "(\\d+)(?!.*\\d)", 1).as("Count"),
+                        regexp_replace(upper(col(companyInfo.getVendor())), "[^A-Z0-9_]", "").as("SearchVendor"),
+                        regexp_replace(upper(col(companyInfo.getNumber())), "[^A-Z0-9_]", "").as("SearchNumber")
                 );
-
 
         dataset.show(5);
 

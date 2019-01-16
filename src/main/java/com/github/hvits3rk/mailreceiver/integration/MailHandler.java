@@ -29,6 +29,7 @@ public class MailHandler {
         folder.open(Folder.READ_WRITE);
 
         Multipart multipart = (Multipart) message.getContent();
+        String fromHeader = message.getHeader("From")[0];
 
         for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
@@ -42,7 +43,7 @@ public class MailHandler {
                 Files.createFile(newFilePath);
                 ((MimeBodyPart) bodyPart).saveFile(newFilePath.toFile());
 
-                sparkService.runCsvDataFrame(newFilePath.toString());
+                sparkService.runCsvDataFrame(newFilePath.toString(), fromHeader);
             }
         }
 
