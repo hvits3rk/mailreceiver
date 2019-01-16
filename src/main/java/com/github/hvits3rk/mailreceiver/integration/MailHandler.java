@@ -43,6 +43,7 @@ public class MailHandler {
                 if (!filename.endsWith(".csv"))
                     continue;
                 Path newFilePath = Paths.get(tempFolder + filename);
+                Files.deleteIfExists(newFilePath);
                 Files.createFile(newFilePath);
                 ((MimeBodyPart) bodyPart).saveFile(newFilePath.toFile());
 
