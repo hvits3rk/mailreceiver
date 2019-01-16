@@ -2,9 +2,12 @@ package com.github.hvits3rk.mailreceiver.controller;
 
 import com.github.hvits3rk.mailreceiver.entity.PriceItem;
 import com.github.hvits3rk.mailreceiver.repository.PriceItemRepository;
+import com.github.hvits3rk.mailreceiver.service.SparkService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
 
@@ -12,9 +15,14 @@ import java.math.BigDecimal;
 public class MainController {
 
     private final PriceItemRepository priceItemRepository;
+    private final SparkService sparkService;
 
-    public MainController(PriceItemRepository priceItemRepository) {
+    @Value("${com.github.hvits3rk.debug.csvpath}")
+    private String csvPath;
+
+    public MainController(PriceItemRepository priceItemRepository, SparkService sparkService) {
         this.priceItemRepository = priceItemRepository;
+        this.sparkService = sparkService;
     }
 
     @GetMapping("/")
@@ -34,5 +42,10 @@ public class MainController {
     @GetMapping("/mail")
     public String mailPage(Model model) {
         return "mail";
+    }
+
+    @RequestMapping("/debug/launchSpark")
+    public void launchSpark() {
+        sparkService.runCsvDataFrame(csvPath);
     }
 }

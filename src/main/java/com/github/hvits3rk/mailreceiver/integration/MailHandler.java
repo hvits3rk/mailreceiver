@@ -1,5 +1,7 @@
 package com.github.hvits3rk.mailreceiver.integration;
 
+import com.github.hvits3rk.mailreceiver.service.SparkService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 
@@ -13,6 +15,13 @@ import java.nio.file.Paths;
 
 @MessageEndpoint
 public class MailHandler {
+
+    private final SparkService sparkService;
+
+    @Autowired
+    public MailHandler(SparkService sparkService) {
+        this.sparkService = sparkService;
+    }
 
     @ServiceActivator(inputChannel = "inputChannel")
     public void processMessage(MimeMessage message) throws MessagingException, IOException {
@@ -32,6 +41,8 @@ public class MailHandler {
                 Path newFilePath = Paths.get("/home/hvits3rk/Downloads/received_files/" + filename);
                 Files.createFile(newFilePath);
                 ((MimeBodyPart) bodyPart).saveFile(newFilePath.toFile());
+
+                sparkService.runCsvDataFrame(newFilePath.toString());
             }
         }
 
