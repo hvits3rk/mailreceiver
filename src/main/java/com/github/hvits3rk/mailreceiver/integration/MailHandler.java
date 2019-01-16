@@ -2,6 +2,7 @@ package com.github.hvits3rk.mailreceiver.integration;
 
 import com.github.hvits3rk.mailreceiver.service.SparkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 
@@ -18,7 +19,9 @@ public class MailHandler {
 
     private final SparkService sparkService;
 
-    @Autowired
+    @Value("${com.github.hvits3rk.tempfolder}")
+    private String tempFolder;
+
     public MailHandler(SparkService sparkService) {
         this.sparkService = sparkService;
     }
@@ -39,7 +42,7 @@ public class MailHandler {
                 String filename = bodyPart.getFileName();
                 if (!filename.endsWith(".csv"))
                     continue;
-                Path newFilePath = Paths.get("/home/hvits3rk/Downloads/received_files/" + filename);
+                Path newFilePath = Paths.get(tempFolder + filename);
                 Files.createFile(newFilePath);
                 ((MimeBodyPart) bodyPart).saveFile(newFilePath.toFile());
 
